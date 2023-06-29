@@ -1,11 +1,14 @@
+//const { router } = require("../app");
+//const router = require("express").Router();
+
+const express = require("express");
+const router = express.Router();
 const axios = require("axios");
-const { router } = require("../app");
 
 // const Meme = require("../models/Meme.model");
 
 // GET meme Templates from external service and pass to our router/api/templates
 router.get("/templates", (req, res, next) => {
-
   axios
     .get(`${process.env.MEME_API_URL}/templates`)
     .then((response) => res.json(response.data))
@@ -18,4 +21,4 @@ router.get("/templates", (req, res, next) => {
     });
 });
 
-module.exports = router
+module.exports = router;
