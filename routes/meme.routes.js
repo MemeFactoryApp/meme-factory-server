@@ -1,7 +1,5 @@
-const express = require("express");
-const router = express.Router();
-
 const axios = require("axios");
+const { router } = require("../app");
 
 // const Meme = require("../models/Meme.model");
 
@@ -20,4 +18,4 @@ router.get("/templates", (req, res, next) => {
     });
 });
 
-module.exports = router;
+module.exports = router

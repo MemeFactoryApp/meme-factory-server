@@ -5,6 +5,7 @@ const express = require("express");
 
 const app = express();
 require("./config")(app);
+require("axios");
 
 // 👇 Start handling routes here
 
