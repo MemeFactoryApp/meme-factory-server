@@ -15,6 +15,8 @@ const indexRoutes = require("./routes/index.routes");
 app.use("/api", indexRoutes);
 
 // we can now use IsAuthenicated in our routes when created
+ const memeRoutes = require('./routes/meme.routes')
+ app.use('/api', memeRoutes)
  
 const authRouter = require("./routes/auth.routes");     
 app.use("/auth", authRouter);  
