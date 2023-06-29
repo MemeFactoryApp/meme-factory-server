@@ -84,7 +84,7 @@ router.post("/login", (req, res, next) => {
 });
 
 router.get("/verify", isAuthenticated, (req, res, next) => {
-  console.log(`req.payload`, req.payload);
+  // console.log(`req.payload`, req.payload);
   res.status(200).json(req.payload);
 });
 

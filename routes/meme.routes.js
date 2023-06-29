@@ -21,4 +21,18 @@ router.get("/templates", (req, res, next) => {
     });
 });
 
+router.get("/templates/:id", (req, res, next) => {
+  const { id } = req.params;
+  axios
+  .get(`${process.env.MEME_API_URL}/templates/${id}`)
+  .then((response) => res.json(response.data))
+    .catch((err) => {
+      console.log("error getting template details", err);
+      res.status(500).json({
+        message: "error getting template details",
+        error: err,
+      });
+    });
+})
+
 module.exports = router;
