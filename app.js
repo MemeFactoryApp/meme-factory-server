@@ -5,6 +5,7 @@ const express = require("express");
 
 const app = express();
 require("./config")(app);
+require("axios");
 
 // 👇 Start handling routes here
 
@@ -15,9 +16,11 @@ const indexRoutes = require("./routes/index.routes");
 app.use("/api", indexRoutes);
 
 // we can now use IsAuthenicated in our routes when created
- 
-const authRouter = require("./routes/auth.routes");     
-app.use("/auth", authRouter);  
+
+const authRouter = require("./routes/auth.routes");
+app.use("/auth", authRouter);
+const memeRoutes = require("./routes/meme.routes");
+app.use("/templates", memeRoutes);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
