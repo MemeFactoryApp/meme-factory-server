@@ -4,8 +4,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-
-// const Meme = require("../models/Meme.model");
+const Meme = require("../models/Meme.model");
 
 // GET meme Templates from external service and pass to our router/api/templates
 router.get("/templates", (req, res, next) => {
@@ -21,6 +20,7 @@ router.get("/templates", (req, res, next) => {
     });
 });
 
+//Get meme template by ID from external service and pass to our router/api/templates/:id
 router.get("/templates/:id", (req, res, next) => {
   const { id } = req.params;
   axios
@@ -34,5 +34,26 @@ router.get("/templates/:id", (req, res, next) => {
       });
     });
 })
+
+// Create new meme
+
+router.post("/templates/:id", (req, res, next) => {
+  const { id } = req.params;
+  axios
+  .post(`${process.env.MEME_API_URL}/templates/${id}`)
+  .then((response) => {
+    console.log(response.data)
+  })
+
+  // Meme.create(newMeme)
+  //     .then(response => res.json(response))
+  //     .catch(err => {
+  //         console.log("error creating a new project", err);
+  //         res.status(500).json({
+  //             message: "error creating a new project",
+  //             error: err
+  //         });
+      // })
+});
 
 module.exports = router;

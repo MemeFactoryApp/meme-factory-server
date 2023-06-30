@@ -18,6 +18,7 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Name is required."],
     },
+    memes: [ { type: Schema.Types.ObjectId, ref: 'Meme' } ]
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
