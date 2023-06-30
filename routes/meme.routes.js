@@ -39,10 +39,20 @@ router.get("/templates/:id", (req, res, next) => {
 
 router.post("/templates/:id", (req, res, next) => {
   const { id } = req.params;
+  const { text } = req.body
+  console.log(text)
   axios
-  .post(`${process.env.MEME_API_URL}/templates/${id}`)
+  .post(`${process.env.MEME_API_URL}/templates/${id}`, {text})
   .then((response) => {
     console.log(response.data)
+    res.json(response.data)
+  })
+  .catch((err) => {
+    console.log("error getting new meme", err);
+    res.status(500).json({
+      message: "error getting new meme",
+      error: err,
+    });
   })
 
   // Meme.create(newMeme)
