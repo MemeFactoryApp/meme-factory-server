@@ -1,10 +1,10 @@
-//const { router } = require("../app");
-//const router = require("express").Router();
-
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const Meme = require("../models/Meme.model");
+const authRoutes = require("../routes/auth.routes");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
+
 
 // GET meme Templates from external service and pass to our router/api/templates
 router.get("/templates", (req, res, next) => {
@@ -54,16 +54,19 @@ router.post("/templates/:id", (req, res, next) => {
       error: err,
     });
   })
+});
 
-  // Meme.create(newMeme)
-  //     .then(response => res.json(response))
-  //     .catch(err => {
-  //         console.log("error creating a new project", err);
-  //         res.status(500).json({
-  //             message: "error creating a new project",
-  //             error: err
-  //         });
-      // })
+router.post('/create', isAuthenticated, (req, res, next) => {
+	const newMeme = {
+    title: req.body.title,
+    url: req.body.url,
+    createdBy: req.payload._id
+	};
+	Meme
+		.create(newMeme) 
+		.catch((e) => {
+			console.log('error getting User details from DB', e);
+		});
 });
 
 module.exports = router;
