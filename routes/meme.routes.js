@@ -39,7 +39,7 @@ router.get("/templates/:id", (req, res, next) => {
 
 router.post("/templates/:id", (req, res, next) => {
   const { id } = req.params;
-  const { text } = req.body
+  const { text } = req.body;
   console.log(text)
   axios
   .post(`${process.env.MEME_API_URL}/templates/${id}`, {text})
@@ -56,6 +56,8 @@ router.post("/templates/:id", (req, res, next) => {
   })
 });
 
+// creating in database
+
 router.post('/create', isAuthenticated, (req, res, next) => {
 	const newMeme = {
     title: req.body.title,
@@ -68,5 +70,22 @@ router.post('/create', isAuthenticated, (req, res, next) => {
 			console.log('error getting User details from DB', e);
 		});
 });
+
+// getting memes by id of creator
+
+router.get('/memes', isAuthenticated, (req, res, next) => {
+  Meme.find({ createdBy: { $in: [req.payload._id] }})
+      .then(response => {
+          res.json(response)
+      })
+      .catch(err => {
+          console.log("error getting list of groups", err);
+          res.status(500).json({
+              message: "error getting list of groups",
+              error: err
+          });
+      })
+});
+
 
 module.exports = router;

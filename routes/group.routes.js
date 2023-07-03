@@ -29,7 +29,9 @@ router.post("/groups/create", isAuthenticated, (req, res, next) => {
 //get list of groups available to that user
 
 router.get('/groups', isAuthenticated, (req, res, next) => {
-    Group.find({ createdBy: { $in: [req.payload._id] } })
+    Group.find({
+        $or: [{ createdBy: { $in: [req.payload._id] } }, { users: { $in: [req.payload.email] } }]
+      })
         .populate("memes")
         .then(response => {
             res.json(response)
@@ -42,6 +44,8 @@ router.get('/groups', isAuthenticated, (req, res, next) => {
             });
         })
 });
+
+
 
 //Get group by id
 
