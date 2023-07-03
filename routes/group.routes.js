@@ -7,7 +7,7 @@ const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 // Create Group
 
-router.post("/groups/create", (req, res, next) => {
+router.post("/groups/create", isAuthenticated, (req, res, next) => {
 
     const newGroup = {
         groupName: req.body.groupName,
@@ -15,7 +15,6 @@ router.post("/groups/create", (req, res, next) => {
         memes: [],
         createdBy: req.payload._id
     }
-
     Group.create(newGroup)
         .then(response => res.status(201).json(response))
         .catch(err => {
@@ -29,9 +28,8 @@ router.post("/groups/create", (req, res, next) => {
 
 //get list of groups available to that user
 
-router.get('/groups/:userId', isAuthenticated, (req, res, next) => {
-    const { userId } = req.params
-    Group.find()
+router.get('/groups', isAuthenticated, (req, res, next) => {
+    Group.find({ createdBy: { $in: [req.payload._id] } })
         .populate("memes")
         .then(response => {
             res.json(response)
