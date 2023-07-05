@@ -2,8 +2,10 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const Meme = require("../models/Meme.model");
+const Group = require("../models/Group.model");
 const authRoutes = require("../routes/auth.routes");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
+const { default: mongoose } = require("mongoose");
 
 // GET meme Templates from external service and pass to our router/api/templates
 router.get("/templates", (req, res, next) => {
@@ -100,5 +102,63 @@ router.get("/memes/random", (req, res, next) => {
       });
     });
 });
+
+// router.delete("/memes/:id/delete", isAuthenticated, (req, res, next) => {
+//   const { id } = req.params;
+//   if (!mongoose.Types.ObjectId.isValid(id)) {
+//     res.status(400).json({ message: "Specified id is not valid" });
+//     return;
+//   }
+//   console.log(id)
+//   Group.find({ memes: { $in: id } })
+//     .then((groups) => {
+//       Promise.all(groups.map((group) => {
+//         console.log(group.memes)
+//         Group.findByIdAndUpdate(group._id, {
+//           $pull: { memes: String(id) },
+//         });
+//       })) 
+//     })
+//     .then(() => {
+//       Meme.findByIdAndRemove(id);
+//     })
+//     .then(() =>
+//       res.json({ message: `Meme with id ${id} was removed successfully.` })
+//     )
+//     .catch((err) => {
+//       console.log("error deleting meme", err);
+//       res.status(500).json({
+//         message: "error deleting meme",
+//         error: err,
+//       });
+//     });
+// });
+
+router.delete("/memes/:id/delete", async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400).json({ message: "Specified id is not valid" });
+      return;
+    }
+    console.log(typeof id)
+
+    const groups = await Group.find({ memes: { $in: id } })
+
+    await Promise.all(groups.map((group) => {
+      console.log(group.memes)
+      group.memes.splice(group.memes.indexOf(id), 1)
+      group.save()
+    })) 
+
+    await Meme.findByIdAndDelete(id)
+
+    return res.json({ message: `Meme with id ${id} was removed successfully.` })
+
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json(error)
+  }
+})
 
 module.exports = router;
