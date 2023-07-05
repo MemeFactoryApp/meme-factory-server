@@ -28,10 +28,11 @@ router.post("/groups/create", isAuthenticated, (req, res, next) => {
 //get list of groups available to that user
 
 router.get("/groups", isAuthenticated, (req, res, next) => {
+    console.log(req.payload.email.toString())
   Group.find({
     $or: [
       { createdBy: { $in: [req.payload._id] } },
-      { users: { $in: [req.payload.email] } },
+      { users: { $elemMatch: { user: String(req.payload.email) }} },
     ],
   })
     .populate("memes")
@@ -46,29 +47,6 @@ router.get("/groups", isAuthenticated, (req, res, next) => {
       });
     });
 });
-
-//Get group by id
-
-// router.get("/groups/:groupId", isAuthenticated, (req, res, next) => {
-//   const { groupId } = req.params;
-
-//   if (!mongoose.Types.ObjectId.isValid(groupId)) {
-//     res.status(400).json({ message: "Specified id is not valid" });
-//     return;
-//   }
-
-//   Group.findById(groupId)
-//     .populate("memes")
-//     .then((group) => res.json(group))
-
-//     .catch((err) => {
-//       console.log("error getting details of this group", err);
-//       res.status(500).json({
-//         message: "error getting details of this group",
-//         error: err,
-//       });
-//     });
-// });
 
 router.get("/groups/:groupId", isAuthenticated, async (req, res) => {
   try {
@@ -91,9 +69,10 @@ router.get("/groups/:groupId", isAuthenticated, async (req, res) => {
     return res.status(200).json({ group: group, memes: memes });
   } catch (error) {
     console.log(error);
-    return res.status(600).json({ msg: "error retrieving MEMêS", error });
+    return res.status(600).json({ msg: "error retrieving MEMES", error });
   }
 });
+
 // get group by Id and update
 
 router.put("/groups/:groupId", (req, res, next) => {
