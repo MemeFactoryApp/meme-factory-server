@@ -83,8 +83,7 @@ router.put('/groups/:groupId', (req, res, next) => {
     const newDetails = {
         groupName: req.body.groupName,
         users: [req.body.users],
-        memes: req.body.memes,
-        createdBy: req.payload._id
+        memes: [req.body.memes],
     }
 
 
