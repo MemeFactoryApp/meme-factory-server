@@ -11,8 +11,8 @@ router.post("/groups/create", isAuthenticated, (req, res, next) => {
 
     const newGroup = {
         groupName: req.body.groupName,
-        users: [req.body.users],
-        memes: [],
+        users: req.body.users,
+        memes: req.body.memes,
         createdBy: req.payload._id
     }
     Group.create(newGroup)
