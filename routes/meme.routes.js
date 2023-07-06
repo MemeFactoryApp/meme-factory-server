@@ -10,7 +10,9 @@ const { default: mongoose } = require("mongoose");
 // GET meme Templates from external service and pass to our router/api/templates
 router.get("/templates", (req, res, next) => {
   axios
-    .get(`${process.env.MEME_API_URL}/templates`, { headers: { 'X-API-KEY': process.env.API_KEY} })
+    .get(`${process.env.MEME_API_URL}/templates`, {
+      headers: { "X-API-KEY": process.env.API_KEY },
+    })
     .then((response) => res.json(response.data))
     .catch((err) => {
       console.log("error getting list of templates", err);
@@ -25,7 +27,9 @@ router.get("/templates", (req, res, next) => {
 router.get("/templates/:id", (req, res, next) => {
   const { id } = req.params;
   axios
-    .get(`${process.env.MEME_API_URL}/templates/${id}`, { headers: { 'X-API-KEY': process.env.API_KEY} })
+    .get(`${process.env.MEME_API_URL}/templates/${id}`, {
+      headers: { "X-API-KEY": process.env.API_KEY },
+    })
     .then((response) => res.json(response.data))
     .catch((err) => {
       console.log("error getting template details", err);
@@ -43,7 +47,11 @@ router.post("/templates/:id", (req, res, next) => {
   const { text } = req.body;
   console.log(text);
   axios
-    .post(`${process.env.MEME_API_URL}/templates/${id}`, { text }, { headers: { 'X-API-KEY': process.env.API_KEY} })
+    .post(
+      `${process.env.MEME_API_URL}/templates/${id}`,
+      { text },
+      { headers: { "X-API-KEY": process.env.API_KEY } }
+    )
     .then((response) => {
       console.log(response.data);
       res.json(response.data);
@@ -60,14 +68,17 @@ router.post("/templates/:id", (req, res, next) => {
 // creating in database
 
 router.post("/create", isAuthenticated, (req, res, next) => {
+  console.log(req.body);
   const newMeme = {
     title: req.body.title,
     url: req.body.url,
     createdBy: req.payload._id,
   };
-  Meme.create(newMeme).catch((e) => {
-    console.log("error getting User details from DB", e);
-  });
+  Meme.create(newMeme)
+    .then((response) => res.status(200).json(response))
+    .catch((e) => {
+      console.log("error getting User details from DB", e);
+    });
 });
 //getting all memes in database
 
@@ -85,7 +96,6 @@ router.get("/userMemes", (req, res, next) => {
     });
 });
 
-
 // Getting memes by id of creator
 
 router.get("/memes", isAuthenticated, (req, res, next) => {
@@ -102,7 +112,7 @@ router.get("/memes", isAuthenticated, (req, res, next) => {
     });
 });
 
-// Get random meme 
+// Get random meme
 router.get("/memes/random", (req, res, next) => {
   const random = (array) => array[Math.floor(Math.random() * array.length)];
 
@@ -120,7 +130,6 @@ router.get("/memes/random", (req, res, next) => {
     });
 });
 
-
 //Delete meme from all areas
 
 router.delete("/memes/:id/delete", async (req, res) => {
@@ -130,22 +139,25 @@ router.delete("/memes/:id/delete", async (req, res) => {
       res.status(400).json({ message: "Specified id is not valid" });
       return;
     }
-    const groups = await Group.find({ memes: { $in: id } })
+    const groups = await Group.find({ memes: { $in: id } });
 
-    await Promise.all(groups.map((group) => {
-      console.log(group.memes)
-      group.memes.splice(group.memes.indexOf(id), 1)
-      group.save()
-    })) 
+    await Promise.all(
+      groups.map((group) => {
+        console.log(group.memes);
+        group.memes.splice(group.memes.indexOf(id), 1);
+        group.save();
+      })
+    );
 
-    await Meme.findByIdAndDelete(id)
+    await Meme.findByIdAndDelete(id);
 
-    return res.json({ message: `Meme with id ${id} was removed successfully.` })
-
+    return res.json({
+      message: `Meme with id ${id} was removed successfully.`,
+    });
   } catch (error) {
-    console.log(error)
-    return res.status(500).json(error)
+    console.log(error);
+    return res.status(500).json(error);
   }
-})
+});
 
 module.exports = router;

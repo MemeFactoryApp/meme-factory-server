@@ -19,8 +19,8 @@ app.use("/api", indexRoutes);
 const memeRoutes = require("./routes/meme.routes");
 app.use("/api", memeRoutes);
 
-const groupRoutes = require('./routes/group.routes');
-app.use('/api', groupRoutes)
+const groupRoutes = require("./routes/group.routes");
+app.use("/api", groupRoutes);
 
 const authRouter = require("./routes/auth.routes");
 app.use("/auth", authRouter);
