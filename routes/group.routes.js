@@ -100,7 +100,7 @@ router.put("/groups/:groupId", (req, res, next) => {
     });
 });
 
-// Delete group by iD
+// Delete group by id
 router.delete("/groups/:groupId", (req, res, next) => {
   const { groupId } = req.params;
 
@@ -140,7 +140,7 @@ router.delete("/groups/:groupId/memes/:id/delete", async (req, res) => {
     })
     .then(() =>
       res.json({
-        message: `Group with id ${groupId} & all associated tasks were removed successfully.`,
+        message: `Meme with id ${id} was removed successfully from the group.`,
       })
     )
     .catch((err) => {

@@ -25,7 +25,7 @@ router.get("/templates", (req, res, next) => {
 router.get("/templates/:id", (req, res, next) => {
   const { id } = req.params;
   axios
-    .get(`${process.env.MEME_API_URL}/templates/${id}`)
+    .get(`${process.env.MEME_API_URL}/templates/${id}`, { headers: { 'X-API-KEY': process.env.API_KEY} })
     .then((response) => res.json(response.data))
     .catch((err) => {
       console.log("error getting template details", err);
@@ -43,7 +43,7 @@ router.post("/templates/:id", (req, res, next) => {
   const { text } = req.body;
   console.log(text);
   axios
-    .post(`${process.env.MEME_API_URL}/templates/${id}`, { text })
+    .post(`${process.env.MEME_API_URL}/templates/${id}`, { text }, { headers: { 'X-API-KEY': process.env.API_KEY} })
     .then((response) => {
       console.log(response.data);
       res.json(response.data);
@@ -69,6 +69,22 @@ router.post("/create", isAuthenticated, (req, res, next) => {
     console.log("error getting User details from DB", e);
   });
 });
+//getting all memes in database
+
+router.get("/userMemes", (req, res, next) => {
+  Meme.find()
+    .then((response) => {
+      res.json(response);
+    })
+    .catch((err) => {
+      console.log("error getting list of groups", err);
+      res.status(500).json({
+        message: "error getting list of groups",
+        error: err,
+      });
+    });
+});
+
 
 // Getting memes by id of creator
 
@@ -103,6 +119,7 @@ router.get("/memes/random", (req, res, next) => {
       });
     });
 });
+
 
 //Delete meme from all areas
 
