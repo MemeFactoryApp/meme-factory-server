@@ -10,7 +10,7 @@ const { default: mongoose } = require("mongoose");
 // GET meme Templates from external service and pass to our router/api/templates
 router.get("/templates", (req, res, next) => {
   axios
-    .get(`${process.env.MEME_API_URL}/templates`)
+    .get(`${process.env.MEME_API_URL}/templates`, { headers: { 'X-API-KEY': process.env.API_KEY} })
     .then((response) => res.json(response.data))
     .catch((err) => {
       console.log("error getting list of templates", err);
@@ -70,7 +70,7 @@ router.post("/create", isAuthenticated, (req, res, next) => {
   });
 });
 
-// getting memes by id of creator
+// Getting memes by id of creator
 
 router.get("/memes", isAuthenticated, (req, res, next) => {
   Meme.find({ createdBy: { $in: [req.payload._id] } })
@@ -86,6 +86,7 @@ router.get("/memes", isAuthenticated, (req, res, next) => {
     });
 });
 
+// Get random meme 
 router.get("/memes/random", (req, res, next) => {
   const random = (array) => array[Math.floor(Math.random() * array.length)];
 
@@ -103,36 +104,7 @@ router.get("/memes/random", (req, res, next) => {
     });
 });
 
-// router.delete("/memes/:id/delete", isAuthenticated, (req, res, next) => {
-//   const { id } = req.params;
-//   if (!mongoose.Types.ObjectId.isValid(id)) {
-//     res.status(400).json({ message: "Specified id is not valid" });
-//     return;
-//   }
-//   console.log(id)
-//   Group.find({ memes: { $in: id } })
-//     .then((groups) => {
-//       Promise.all(groups.map((group) => {
-//         console.log(group.memes)
-//         Group.findByIdAndUpdate(group._id, {
-//           $pull: { memes: String(id) },
-//         });
-//       })) 
-//     })
-//     .then(() => {
-//       Meme.findByIdAndRemove(id);
-//     })
-//     .then(() =>
-//       res.json({ message: `Meme with id ${id} was removed successfully.` })
-//     )
-//     .catch((err) => {
-//       console.log("error deleting meme", err);
-//       res.status(500).json({
-//         message: "error deleting meme",
-//         error: err,
-//       });
-//     });
-// });
+//Delete meme from all areas
 
 router.delete("/memes/:id/delete", async (req, res) => {
   try {
@@ -141,8 +113,6 @@ router.delete("/memes/:id/delete", async (req, res) => {
       res.status(400).json({ message: "Specified id is not valid" });
       return;
     }
-    console.log(typeof id)
-
     const groups = await Group.find({ memes: { $in: id } })
 
     await Promise.all(groups.map((group) => {

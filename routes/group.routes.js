@@ -28,11 +28,11 @@ router.post("/groups/create", isAuthenticated, (req, res, next) => {
 //get list of groups available to that user
 
 router.get("/groups", isAuthenticated, (req, res, next) => {
-    console.log(req.payload.email.toString())
+  console.log(req.payload.email.toString());
   Group.find({
     $or: [
       { createdBy: { $in: [req.payload._id] } },
-      { users: { $elemMatch: { user: String(req.payload.email) }} },
+      { users: { $elemMatch: { user: String(req.payload.email) } } },
     ],
   })
     .populate("memes")
@@ -124,4 +124,31 @@ router.delete("/groups/:groupId", (req, res, next) => {
     });
 });
 
+//Delete meme from group
+
+router.delete("/groups/:groupId/memes/:id/delete", async (req, res) => {
+  const { groupId } = req.params;
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id, groupId)) {
+    res.status(400).json({ message: "Specified id is not valid" });
+    return;
+  }
+  Group.findById(groupId)
+    .then((group) => {
+      group.memes.splice(group.memes.indexOf(id), 1);
+      group.save();
+    })
+    .then(() =>
+      res.json({
+        message: `Group with id ${groupId} & all associated tasks were removed successfully.`,
+      })
+    )
+    .catch((err) => {
+      console.log("error deleting group", err);
+      res.status(500).json({
+        message: "error deleting group",
+        error: err,
+      });
+    });
+});
 module.exports = router;
