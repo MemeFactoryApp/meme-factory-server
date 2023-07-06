@@ -101,7 +101,6 @@ router.put("/groups/edit/:groupId", (req, res, next) => {
     });
 });
 
-
 // Delete group by id
 router.delete("/groups/:groupId", (req, res, next) => {
   const { groupId } = req.params;
@@ -153,4 +152,55 @@ router.delete("/groups/:groupId/memes/:id/delete", async (req, res) => {
       });
     });
 });
+
+router.delete("/groups/:groupId/delete", async (req, res) => {
+  const { groupId } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(groupId)) {
+    res.status(400).json({ message: "Specified id is not valid" });
+    return;
+  }
+
+  Group.findByIdAndRemove(groupId)
+    .then((deletedGroup) =>
+      res.json({
+        message: `Group ${deletedGroup} was removed successfully.`,
+      })
+    )
+    .catch((err) => {
+      console.log("error deleting group", err);
+      res.status(500).json({
+        message: "error deleting group",
+        error: err,
+      });
+    });
+});
+
+// add memes to a specific group
+router.put("/groups/:groupId/addMemes", (req, res, next) => {
+  const { groupId } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(groupId)) {
+    res.status(400).json({ message: "Specified id is not valid" });
+    return;
+  }
+  const newDetails = {
+    memes: req.body.memes,
+  };
+  console.log("newdetails" + req.body.memes);
+  Group.findByIdAndUpdate(
+    groupId,
+    {
+      $addToSet: { memes: [...newDetails.memes] },
+    },
+    { new: true }
+  )
+    .then((updatedGroup) => res.json(updatedGroup))
+    .catch((err) => {
+      console.log("error updating group", err);
+      res.status(500).json({
+        message: "error updating group",
+        error: err,
+      });
+    });
+});
+
 module.exports = router;
