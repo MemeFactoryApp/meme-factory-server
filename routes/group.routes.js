@@ -73,9 +73,9 @@ router.get("/groups/:groupId", isAuthenticated, async (req, res) => {
   }
 });
 
-// get group by Id and update
+// Edit or update a specific group by Id
 
-router.put("/groups/:groupId", (req, res, next) => {
+router.put("/groups/edit/:groupId", (req, res, next) => {
   const { groupId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(groupId)) {
@@ -85,20 +85,22 @@ router.put("/groups/:groupId", (req, res, next) => {
 
   const newDetails = {
     groupName: req.body.groupName,
-    users: [req.body.users],
-    memes: [req.body.memes],
+    users: req.body.users,
   };
+
+  console.log(newDetails);
 
   Group.findByIdAndUpdate(groupId, newDetails, { new: true })
     .then((updatedGroup) => res.json(updatedGroup))
     .catch((err) => {
-      console.log("error updating Group", err);
+      console.log("error updating group", err);
       res.status(500).json({
-        message: "error updating Group",
+        message: "error updating group",
         error: err,
       });
     });
 });
+
 
 // Delete group by id
 router.delete("/groups/:groupId", (req, res, next) => {
